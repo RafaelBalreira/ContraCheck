@@ -1,28 +1,98 @@
-# Angular specific
-/dist/
-/out-tsc/
-/tmp/
-/coverage/
-/e2e/test-output/
-/.angular/
-.angular/
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+*.egg
+dist/
+build/
+eggs/
+*.whl
+pip-log.txt
+pip-delete-this-directory.txt
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+pytestdebug.log
+*.manifest
+*.spec
+*.log
+.env
+.venv/
+venv/
+ENV/
+env/
 
-# Node modules and dependency files
+# =========================
+# Angular / Node
+# =========================
 /node_modules/
 /package-lock.json
 /yarn.lock
-
-# Environment files
-/.env
-
-# Angular CLI and build artefacts
-/.angular-cli.json
+/out-tsc/
+/dist/
+/.angular/
+.angular/
 /.ng/
-
-# TypeScript cache
+coverage/
+tmp/
 *.tsbuildinfo
-
-# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# =========================
+# IDEs and Editors
+# =========================
+.idea/
+.vscode/*
+.vscode
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+.history/
+
+# =========================
+# OS
+# =========================
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# =========================
+# AI / LLM Tools
+# =========================
+.opencode/
+opencode.json
+.opencode.json
+.cursor/
+.cursorignore
+.cursorindexingignore
+.claude/
+CLAUDE.md
+AGENTS.md
+.github/copilot-instructions.md
+.aider*
+.env.ai
+.cursorrules
+.specs

@@ -1,0 +1,9 @@
+@if (message()) {
+  <div class="error-container">
+    <mat-icon class="error-icon">error_outline</mat-icon>
+    <span class="error-message">{{ message() }}</span>
+    <button mat-icon-button (click)="dismiss.emit()" class="dismiss-btn">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+}

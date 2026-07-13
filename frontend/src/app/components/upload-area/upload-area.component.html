@@ -1,0 +1,43 @@
+<div
+  class="upload-area"
+  [class.drag-over]="dragOver"
+  (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave()"
+  (drop)="onDrop($event)"
+>
+  <div class="upload-content">
+    <mat-icon class="upload-icon">cloud_upload</mat-icon>
+    <p class="upload-text">Arraste e solte os arquivos PDF aqui</p>
+    <p class="upload-or">ou</p>
+    <button mat-raised-button color="primary" (click)="fileInput.click()">
+      Selecionar Arquivos
+    </button>
+    <input #fileInput type="file" accept=".pdf" multiple hidden (change)="onFileInput($event)" />
+  </div>
+</div>
+
+@if (files().length > 0) {
+  <div class="file-list">
+    <div class="file-list-header">
+      <span>{{ files().length }} arquivo(s) selecionado(s)</span>
+    </div>
+    <div class="file-items">
+      @for (file of files(); track file.name; let i = $index) {
+        <div class="file-item">
+          <mat-icon class="file-icon">description</mat-icon>
+          <span class="file-name">{{ file.name }}</span>
+          <span class="file-size">{{ (file.size / 1024 / 1024).toFixed(2) }} MB</span>
+          <button mat-icon-button class="remove-btn" (click)="removeFile(i)">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      }
+    </div>
+    <div class="file-actions">
+      <button mat-raised-button color="accent" (click)="onProcess()">
+        <mat-icon>play_arrow</mat-icon>
+        Processar {{ files().length }} arquivo(s)
+      </button>
+    </div>
+  </div>
+}

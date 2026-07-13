@@ -1,0 +1,57 @@
+<div class="report-container">
+  <div class="report-header">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Pesquisar por nome</mat-label>
+      <input matInput [ngModel]="searchTerm()" (ngModelChange)="onSearch($event)" placeholder="Digite o nome..." />
+    </mat-form-field>
+  </div>
+
+  @if (paginatedRecords().length > 0) {
+    <table mat-table [dataSource]="paginatedRecords()" matSort (matSortChange)="onSortChange($event)" class="report-table">
+      <ng-container matColumnDef="employeeName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Nome do Funcionário</th>
+        <td mat-cell *matCellDef="let row">{{ row.employeeName }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="totalVencimentos">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Total de Vencimentos</th>
+        <td mat-cell *matCellDef="let row">{{ row.totalVencimentos }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="sourceFile">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Arquivo</th>
+        <td mat-cell *matCellDef="let row">{{ row.sourceFile }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    <mat-paginator
+      [length]="totalFiltered()"
+      [pageSize]="pageSize()"
+      [pageSizeOptions]="[5, 10, 25, 50]"
+      (page)="onPageChange($event)"
+      showFirstLastButtons
+    >
+    </mat-paginator>
+
+    <div class="export-actions">
+      <button mat-raised-button color="primary" (click)="exportCsv.emit()">Exportar CSV</button>
+      <button mat-raised-button color="accent" (click)="exportXlsx.emit()">Exportar Excel</button>
+      <button mat-raised-button (click)="exportPdf.emit()">Exportar PDF</button>
+      @if (ignoredRecords().length > 0) {
+        <button mat-stroked-button color="warn" (click)="showIgnored.emit()">
+          <mat-icon>warning</mat-icon>
+          Registros Ignorados ({{ ignoredRecords().length }})
+        </button>
+      }
+      <button mat-stroked-button (click)="newFile.emit()">Processar novo arquivo</button>
+    </div>
+  } @else {
+    <div class="empty-state">
+      <p>Nenhum registro encontrado.</p>
+      <button mat-stroked-button (click)="newFile.emit()">Processar novo arquivo</button>
+    </div>
+  }
+</div>

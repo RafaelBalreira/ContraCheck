@@ -1,0 +1,26 @@
+@if (processing()) {
+  <div class="progress-container">
+    <mat-spinner diameter="40"></mat-spinner>
+    <div class="progress-info">
+      <p class="progress-text">Processando PDF...</p>
+      <p class="progress-detail">Páginas processadas: {{ totalPages() }}</p>
+    </div>
+  </div>
+}
+
+@if (!processing() && totalRecords() > 0) {
+  <div class="summary">
+    <div class="summary-item">
+      <span class="summary-label">Páginas processadas</span>
+      <span class="summary-value">{{ totalPages() }}</span>
+    </div>
+    <div class="summary-item">
+      <span class="summary-label">Registros encontrados</span>
+      <span class="summary-value found">{{ totalRecords() }}</span>
+    </div>
+    <div class="summary-item">
+      <span class="summary-label">Registros ignorados</span>
+      <span class="summary-value ignored">{{ ignoredRecords() }}</span>
+    </div>
+  </div>
+}

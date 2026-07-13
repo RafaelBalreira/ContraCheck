@@ -1,0 +1,38 @@
+.report-container {
+  margin-top: 16px;
+}
+
+.report-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.search-field {
+  flex: 1;
+  max-width: 400px;
+}
+
+.report-table {
+  width: 100%;
+}
+
+.export-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 32px;
+  color: #777;
+  background: #fafafa;
+  border-radius: 8px;
+  border: 1px dashed #ddd;
+
+  p {
+    margin-bottom: 16px;
+  }
+}
