@@ -1,10 +1,11 @@
-import { Component, input } from '@angular/core'
+import { Component, input, ChangeDetectionStrategy } from '@angular/core'
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
 
 @Component({
   selector: 'app-progress-indicator',
   imports: [MatProgressSpinnerModule],
   templateUrl: './progress-indicator.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./progress-indicator.component.scss'],
 })
 export class ProgressIndicatorComponent {

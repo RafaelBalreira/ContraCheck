@@ -1,4 +1,4 @@
-import { Component, input, output, signal, computed } from '@angular/core'
+import { Component, input, output, signal, computed, ChangeDetectionStrategy } from '@angular/core'
 import { MatTableModule } from '@angular/material/table'
 import { MatSortModule, Sort } from '@angular/material/sort'
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator'
@@ -22,6 +22,7 @@ import { PaySlip, IgnoredRecord } from '../../models/report.models'
     FormsModule,
   ],
   templateUrl: './report-table.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./report-table.component.scss'],
 })
 export class ReportTableComponent {

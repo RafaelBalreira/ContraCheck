@@ -1,4 +1,4 @@
-import { Component, input, output, signal, computed } from '@angular/core'
+import { Component, input, output, signal, computed, ChangeDetectionStrategy } from '@angular/core'
 
 import { MatTableModule } from '@angular/material/table'
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator'
@@ -10,6 +10,7 @@ import { IgnoredRecord } from '../../models/report.models'
   selector: 'app-ignored-records-panel',
   imports: [MatTableModule, MatPaginatorModule, MatButtonModule, MatIconModule],
   templateUrl: './ignored-records-panel.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./ignored-records-panel.component.scss'],
 })
 export class IgnoredRecordsPanelComponent {

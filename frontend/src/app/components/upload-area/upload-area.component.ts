@@ -1,4 +1,4 @@
-import { Component, output, signal } from '@angular/core'
+import { Component, output, signal, ChangeDetectionStrategy } from '@angular/core'
 
 import { MatIconModule } from '@angular/material/icon'
 import { MatButtonModule } from '@angular/material/button'
@@ -8,6 +8,7 @@ import { MatChipsModule } from '@angular/material/chips'
   selector: 'app-upload-area',
   imports: [MatIconModule, MatButtonModule, MatChipsModule],
   templateUrl: './upload-area.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./upload-area.component.scss'],
 })
 export class UploadAreaComponent {

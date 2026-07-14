@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core'
+import { Component, signal, ChangeDetectionStrategy } from '@angular/core'
 
 import { UploadAreaComponent } from './components/upload-area/upload-area.component'
 import { ProgressIndicatorComponent } from './components/progress-indicator/progress-indicator.component'
@@ -21,6 +21,7 @@ type AppState = 'idle' | 'uploading' | 'processing' | 'complete' | 'error'
     IgnoredRecordsPanelComponent
 ],
   templateUrl: './app.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
