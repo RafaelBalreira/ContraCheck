@@ -1,8 +1,34 @@
 import io
 import csv
+import os
+import platform
 import pandas as pd
 from fpdf import FPDF
 from backend.domain.models import PaySlip
+
+
+def _find_font(*names: str) -> str:
+    system = platform.system()
+    if system == "Windows":
+        candidates = [f"C:/Windows/Fonts/{n}.ttf" for n in names]
+    elif system == "Linux":
+        candidates = []
+        for n in names:
+            candidates += [
+                f"/usr/share/fonts/truetype/dejavu/{n}.ttf",
+                f"/usr/share/fonts/truetype/liberation/{n}-Regular.ttf",
+                f"/usr/share/fonts/truetype/freefont/{n}.ttf",
+            ]
+    elif system == "Darwin":
+        candidates = [f"/Library/Fonts/{n}.ttf" for n in names]
+    else:
+        candidates = []
+    for path in candidates:
+        if os.path.isfile(path):
+            return path
+    raise FileNotFoundError(
+        f"No suitable TTF font found. Searched: {candidates}"
+    )
 
 
 def _sort_key(name: str) -> str:
@@ -50,14 +76,13 @@ def generate_xlsx(records: list[PaySlip]) -> bytes:
 
 
 class _PdfReport(FPDF):
-    _FONT_PATH = "C:/Windows/Fonts/arial.ttf"
 
     def __init__(self, total_records: int, total_ignored: int):
         super().__init__(orientation="L", unit="mm", format="A4")
         self._total_records = total_records
         self._total_ignored = total_ignored
-        self.add_font("arial", "", self._FONT_PATH)
-        self.add_font("arial", "B", self._FONT_PATH.replace("arial.ttf", "arialbd.ttf"))
+        self.add_font("arial", "", _find_font("arial", "DejaVuSans", "LiberationSans"))
+        self.add_font("arial", "B", _find_font("arialbd", "DejaVuSans-Bold", "LiberationSans-Bold"))
         self.set_auto_page_break(auto=True, margin=15)
 
     def header(self):

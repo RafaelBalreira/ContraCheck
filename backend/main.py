@@ -208,17 +208,17 @@ async def export_pdf(token: str = Query(...)):
     )
 
 
-if _static_dir is not None:
-
-    @app.get("/{full_path:path}")
-    async def serve_spa(full_path: str):
-        file_path = _static_dir / full_path
-        if file_path.is_file():
-            return FileResponse(file_path)
-        index = _static_dir / "index.html"
-        if index.is_file():
-            return FileResponse(index)
+@app.get("/{full_path:path}")
+async def serve_spa(full_path: str):
+    if _static_dir is None:
         raise HTTPException(status_code=404, detail="Não encontrado")
+    file_path = _static_dir / full_path
+    if file_path.is_file():
+        return FileResponse(file_path)
+    index = _static_dir / "index.html"
+    if index.is_file():
+        return FileResponse(index)
+    raise HTTPException(status_code=404, detail="Não encontrado")
 
 
 if __name__ == "__main__":  # pragma: no cover
