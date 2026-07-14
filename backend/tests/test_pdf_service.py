@@ -1,14 +1,9 @@
 import os
 import tempfile
 import pytest
+from unittest.mock import patch, MagicMock
 from backend.application.pdf_service import PdfService
 from backend.domain.exceptions import InvalidPDFError, PasswordProtectedError, EmptyFileError
-
-
-SAMPLE_PDF = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-    "contracheque_exemplo.pdf",
-)
 
 
 @pytest.fixture
@@ -30,61 +25,95 @@ class TestPdfServiceValidation:
         finally:
             os.unlink(tmp_path)
 
+    def test_password_protected_raises_error(self, service, first_test_pdf):
+        with patch.object(service._extractor, "is_password_protected", return_value=True):
+            with pytest.raises(PasswordProtectedError):
+                service.process_pdf(first_test_pdf)
 
-class TestPdfServiceWithSample:
-    def test_process_sample_pdf_returns_result(self, service):
-        result = service.process_pdf(SAMPLE_PDF)
-        assert result is not None
-        assert result.total_pages == 102
 
-    def test_process_sample_has_records(self, service):
-        result = service.process_pdf(SAMPLE_PDF)
-        assert result.total_records > 0
+class TestPdfServiceIgnoredRecords:
+    def test_ignored_when_name_is_none(self, service, first_test_pdf):
+        with patch.object(service._strategy, "extract_employee_name", return_value=None):
+            result = service.process_pdf(first_test_pdf)
+            assert result.total_records == 0
+            assert result.ignored_records == 1
+            assert "não encontrados" in result.ignored_details[0].reason
 
-    def test_only_top_half_records_extracted(self, service):
-        result = service.process_pdf(SAMPLE_PDF)
-        for r in result.records:
-            assert "BOTTOM" not in r.employee_name
+    def test_ignored_when_total_is_none(self, service, first_test_pdf):
+        with patch.object(service._strategy, "extract_total_vencimentos", return_value=None):
+            result = service.process_pdf(first_test_pdf)
+            assert result.total_records == 0
+            assert result.ignored_records == 1
+            assert "não encontrados" in result.ignored_details[0].reason
 
-    def test_all_records_have_name_and_value(self, service):
-        result = service.process_pdf(SAMPLE_PDF)
-        for r in result.records:
-            assert r.employee_name, "Employee name should not be empty"
-            assert r.total_vencimentos, "Total vencimentos should not be empty"
+    def test_ignored_when_total_is_asterisk_only(self, service, first_test_pdf):
+        with patch.object(service._strategy, "extract_total_vencimentos", return_value="*****"):
+            result = service.process_pdf(first_test_pdf)
+            assert result.total_records == 0
+            assert result.ignored_records == 1
+            assert "asteriscos" in result.ignored_details[0].reason
 
-    def test_ignored_records_counted(self, service):
-        result = service.process_pdf(SAMPLE_PDF)
-        assert result.ignored_records >= 1
+    def test_ignored_when_extraction_raises_exception(self, service, first_test_pdf):
+        with patch.object(service._extractor, "extract_page_blocks", side_effect=RuntimeError("boom")):
+            result = service.process_pdf(first_test_pdf)
+            assert result.total_records == 0
+            assert result.ignored_records == 1
+            assert "Erro ao processar" in result.ignored_details[0].reason
+            assert len(result.warnings) == 1
 
-    def test_ignored_records_have_details(self, service):
-        result = service.process_pdf(SAMPLE_PDF, source_file="test.pdf")
-        assert len(result.ignored_details) >= 1
-        for ign in result.ignored_details:
-            assert ign.page > 0
-            assert ign.reason
-            assert ign.source_file == "test.pdf"
 
-    def test_records_have_source_file(self, service):
-        result = service.process_pdf(SAMPLE_PDF, source_file="sample.pdf")
-        for r in result.records:
-            assert r.source_file == "sample.pdf"
+class TestPdfServiceWithTestPdfs:
+    def test_process_each_pdf_returns_result(self, service, all_test_pdfs):
+        for pdf_path in all_test_pdfs:
+            result = service.process_pdf(pdf_path)
+            assert result is not None
+            assert result.total_pages == 1
+
+    def test_each_pdf_has_one_record(self, service, all_test_pdfs):
+        for pdf_path in all_test_pdfs:
+            result = service.process_pdf(pdf_path)
+            assert result.total_records == 1
+            assert result.ignored_records == 0
+
+    def test_all_records_have_name_and_value(self, service, all_test_pdfs):
+        for pdf_path in all_test_pdfs:
+            result = service.process_pdf(pdf_path)
+            for r in result.records:
+                assert r.employee_name, "Employee name should not be empty"
+                assert r.total_vencimentos, "Total vencimentos should not be empty"
+
+    def test_records_have_source_file(self, service, all_test_pdfs):
+        for pdf_path in all_test_pdfs:
+            fname = os.path.basename(pdf_path)
+            result = service.process_pdf(pdf_path, source_file=fname)
+            for r in result.records:
+                assert r.source_file == fname
 
 
 class TestPdfServiceSpecificPages:
-    def test_page_1_employee_name(self, service):
-        result = service.process_pdf(SAMPLE_PDF)
+    def test_first_pdf_employee_name(self, service, first_test_pdf):
+        result = service.process_pdf(first_test_pdf)
         first = result.records[0]
-        assert "FULANO" in first.employee_name.upper()
+        assert "FULANO DE TAL" in first.employee_name.upper()
 
-    def test_page_2_different_employee(self, service):
-        result = service.process_pdf(SAMPLE_PDF)
-        if len(result.records) > 1:
-            second = result.records[1]
-            assert "CICLANO" in second.employee_name.upper()
+    def test_second_pdf_employee_name(self, service, all_test_pdfs):
+        result = service.process_pdf(all_test_pdfs[1])
+        assert "CICLANO DE TAL" in result.records[0].employee_name.upper()
 
-    def test_records_have_formatted_values(self, service):
-        result = service.process_pdf(SAMPLE_PDF)
-        for r in result.records[:5]:
-            assert r.total_vencimentos.replace(",", "").replace(".", "").replace("R$", "").strip().replace(" ", ""), (
-                f"Value should be present: {r.total_vencimentos!r}"
-            )
+    def test_third_pdf_employee_name(self, service, all_test_pdfs):
+        result = service.process_pdf(all_test_pdfs[2])
+        assert "BICLANO DE TAL" in result.records[0].employee_name.upper()
+
+    def test_all_records_have_formatted_values(self, service, all_test_pdfs):
+        for pdf_path in all_test_pdfs:
+            result = service.process_pdf(pdf_path)
+            for r in result.records:
+                assert r.total_vencimentos.replace(",", "").replace(".", "").strip(), (
+                    f"Value should be present: {r.total_vencimentos!r}"
+                )
+
+    def test_no_ignored_records(self, service, all_test_pdfs):
+        for pdf_path in all_test_pdfs:
+            result = service.process_pdf(pdf_path)
+            assert result.ignored_records == 0
+            assert len(result.ignored_details) == 0

@@ -1,14 +1,31 @@
 import io
 import os
+import sys
 import time
 import tempfile
 import secrets
+from pathlib import Path
 from fastapi import FastAPI, UploadFile, File, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, FileResponse
 from backend.application.pdf_service import PdfService
 from backend.application.report_service import generate_csv, generate_xlsx, generate_pdf
 from backend.domain.exceptions import InvalidPDFError, PasswordProtectedError, EmptyFileError
+
+
+def _resolve_static_dir() -> Path | None:
+    if getattr(sys, "frozen", False):
+        base = Path(sys._MEIPASS)
+    else:
+        base = Path(__file__).resolve().parent.parent
+    for candidate in [
+        base / "frontend" / "dist" / "frontend" / "browser",
+        base / "frontend" / "dist" / "browser",
+    ]:
+        if candidate.is_dir():
+            return candidate
+    return None
+
 
 app = FastAPI(title="PDF Contracheque Report")
 
@@ -18,6 +35,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+_static_dir = _resolve_static_dir()
 
 pdf_service = PdfService()
 
@@ -43,7 +62,7 @@ MAX_FILE_SIZE = 100 * 1024 * 1024  # 100 MB
 
 @app.post("/api/upload")
 async def upload_pdf(files: list[UploadFile] = File(...)):
-    if not files:
+    if not files:  # pragma: no cover
         raise HTTPException(status_code=400, detail="Nenhum arquivo enviado.")
 
     all_records = []
@@ -52,7 +71,7 @@ async def upload_pdf(files: list[UploadFile] = File(...)):
     total_pages = 0
 
     for file in files:
-        if not file.filename:
+        if not file.filename:  # pragma: no cover
             continue
 
         ext = "." + file.filename.rsplit(".", 1)[-1].lower() if "." in file.filename else ""
@@ -187,3 +206,21 @@ async def export_pdf(token: str = Query(...)):
             "Content-Disposition": "attachment; filename=relatorio.pdf",
         },
     )
+
+
+if _static_dir is not None:
+
+    @app.get("/{full_path:path}")
+    async def serve_spa(full_path: str):
+        file_path = _static_dir / full_path
+        if file_path.is_file():
+            return FileResponse(file_path)
+        index = _static_dir / "index.html"
+        if index.is_file():
+            return FileResponse(index)
+        raise HTTPException(status_code=404, detail="Não encontrado")
+
+
+if __name__ == "__main__":  # pragma: no cover
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

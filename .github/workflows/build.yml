@@ -1,0 +1,64 @@
+name: Build Executable
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Build Angular frontend
+        run: |
+          cd frontend
+          npm ci
+          npx ng build --configuration production
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+
+      - name: Build executable with PyInstaller
+        run: |
+          cd backend
+          pyinstaller \
+            --name contracheck \
+            --onefile \
+            --add-data "../frontend/dist/frontend/browser:frontend/dist/frontend/browser" \
+            --hidden-import backend \
+            --hidden-import backend.main \
+            --hidden-import backend.application \
+            --hidden-import backend.application.extraction_strategy \
+            --hidden-import backend.application.pdf_service \
+            --hidden-import backend.application.report_service \
+            --hidden-import backend.domain \
+            --hidden-import backend.domain.models \
+            --hidden-import backend.domain.exceptions \
+            --hidden-import backend.infrastructure \
+            --hidden-import backend.infrastructure.pdf_extractor \
+            --collect-submodules backend \
+            --noconfirm \
+            -c \
+            backend/main.py
+
+      - name: Upload executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: contracheque-linux
+          path: backend/dist/contracheque
+          if-no-files-found: error

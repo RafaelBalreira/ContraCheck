@@ -1,5 +1,7 @@
 # ContraCheck
 
+![Cobertura](.github/badges/backend-coverage.svg)
+
 Sistema web para leitura automatizada de contracheques em PDF, extração de dados de cada folha e geração de relatórios consolidados (CSV, Excel e PDF).
 
 ## Visão Geral
@@ -15,18 +17,14 @@ O ContraCheck recebe um ou mais arquivos PDF de contracheques (holerites), extra
 
 ## Exemplo de Entrada (Holerite)
 
-> **Seção reservada para imagem de exemplo do holerite de entrada.**
->
-> <!-- Inserir aqui um screenshot ou imagem do PDF de contracheque que o sistema processa. -->
-> <!-- Exemplo de formatação: -->
-> <!-- ![Holerite de exemplo](docs/holerite-exemplo.png) -->
->
-> Cada página do PDF contém:
-> - Cabeçalho com dados da empresa (razão social, CNPJ, centro de custo, tipo de folha)
-> - Dados do funcionário: código, nome, CBO, departamento, filial, data de admissão, cargo
-> - Tabela de vencimentos e descontos (código, descrição, referência, valores)
-> - Totais de vencimentos, descontos e valor líquido
-> - Rodapé com bases de cálculo (salário base, FGTS, IRRF, etc.)
+![Holerite de exemplo](docs/for_readme/exemple_holerite.png)
+
+Cada página do PDF contém:
+- Cabeçalho com dados da empresa (razão social, CNPJ, centro de custo, tipo de folha)
+- Dados do funcionário: código, nome, CBO, departamento, filial, data de admissão, cargo
+- Tabela de vencimentos e descontos (código, descrição, referência, valores)
+- Totais de vencimentos, descontos e valor líquido
+- Rodapé com bases de cálculo (salário base, FGTS, IRRF, etc.)
 
 ## Stack Tecnológica
 
@@ -86,6 +84,7 @@ ContraCheck/
 ├── backend/
 │   ├── main.py                      Ponto de entrada FastAPI
 │   ├── requirements.txt             Dependências Python
+│   ├── .coveragerc                  Configuração de cobertura
 │   ├── domain/
 │   │   ├── models.py                PaySlip, IgnoredRecord, ProcessResult
 │   │   └── exceptions.py            PDFError, InvalidPDFError, etc.
@@ -96,30 +95,38 @@ ContraCheck/
 │   ├── infrastructure/
 │   │   └── pdf_extractor.py         Extração de texto via pdfplumber
 │   └── tests/
+│       ├── conftest.py              Fixtures compartilhadas
 │       ├── test_api.py              Testes de integração da API
 │       ├── test_extraction.py       Testes unitários da estratégia
 │       ├── test_pdf_extractor.py    Testes de extração de PDF
-│       └── test_pdf_service.py      Testes do serviço completo
-└── frontend/
-    ├── package.json                 Dependências Angular
-    ├── angular.json                 Configuração do Angular CLI
-    ├── tsconfig.json
-    └── src/
-        ├── main.ts
-        ├── styles.scss
-        └── app/
-            ├── app.component.ts     Componente raiz (máquina de estados)
-            ├── models/
-            │   └── report.models.ts Interfaces TypeScript
-            ├── services/
-            │   ├── pdf-upload.service.ts   Upload de PDFs
-            │   └── export.service.ts       Download de exportações
-            └── components/
-                ├── upload-area/           Arrastar e soltar PDFs
-                ├── progress-indicator/    Spinner e resumo
-                ├── report-table/          Tabela de resultados
-                ├── ignored-records-panel/ Registros ignorados
-                └── error-display/         Mensagens de erro
+│       ├── test_pdf_service.py      Testes do serviço completo
+│       └── test_report_service.py   Testes de geração de relatórios
+├── frontend/
+│   ├── package.json                 Dependências Angular
+│   ├── angular.json                 Configuração do Angular CLI
+│   ├── tsconfig.json
+│   └── src/
+│       ├── main.ts
+│       ├── styles.scss
+│       └── app/
+│           ├── app.component.ts     Componente raiz (máquina de estados)
+│           ├── models/
+│           │   └── report.models.ts Interfaces TypeScript
+│           ├── services/
+│           │   ├── pdf-upload.service.ts   Upload de PDFs
+│           │   └── export.service.ts       Download de exportações
+│           └── components/
+│               ├── upload-area/           Arrastar e soltar PDFs
+│               ├── progress-indicator/    Spinner e resumo
+│               ├── report-table/          Tabela de resultados
+│               ├── ignored-records-panel/ Registros ignorados
+│               └── error-display/         Mensagens de erro
+└── .github/
+    ├── workflows/
+    │   ├── ci.yml                   CI: testes + badge de cobertura
+    │   └── build.yml                Build de executável via PyInstaller
+    └── badges/
+        └── backend-coverage.svg     Badge de cobertura (auto-gerado)
 ```
 
 ## API REST
@@ -146,8 +153,8 @@ Base URL: `http://localhost:8000`
   "token": "a1b2c3...",
   "records": [
     {
-      "employeeName": "NOME DO FUNCIONÁRIO",
-      "totalVencimentos": "0.000,00",
+      "employeeName": "FULANO DE TAL",
+      "totalVencimentos": "3.500,00",
       "sourceFile": "contracheque.pdf"
     }
   ],
@@ -249,6 +256,29 @@ O sistema processa apenas a **metade superior** de cada página do PDF, onde fic
 - **Indicador de progresso** — spinner durante processamento, resumo ao final
 - **Tratamento de erros** — mensagens claras para PDFs inválidos, protegidos ou vazios
 
+## Aviso de Uso de IA
+
+Este projeto foi desenvolvido com assistência de inteligência artificial. As decisões de arquitetura, implementação, testes e documentação foram realizadas com o auxiliar de um modelo de linguagem (LLM), revisadas e validadas pelo autor do projeto.
+
 ## Licença
 
 [MIT](LICENSE) — Copyright (c) 2026 Rafael Balreira dos Santos
+
+### Compatibilidade de Licenças das Dependências
+
+Todas as dependências são compatíveis com a licença MIT:
+
+| Biblioteca | Licença | Uso |
+|------------|---------|-----|
+| FastAPI | MIT | Framework web |
+| Uvicorn | BSD-3-Clause | Servidor ASGI |
+| pdfplumber | MIT | Extração de texto de PDF |
+| pandas | BSD-3-Clause | Manipulação de dados |
+| openpyxl | MIT | Geração de planilhas Excel |
+| fpdf2 | LGPL-3.0+ | Geração de relatórios PDF |
+| python-multipart | Apache-2.0 | Upload de arquivos |
+| pytest | MIT | Testes |
+| httpx | BSD-3-Clause | Cliente HTTP para testes |
+| PyInstaller | GPL-2.0+ | Build de executável (dev only) |
+
+> **Nota sobre PyInstaller:** A licença GPL do PyInstaller não afeta o projeto pois é utilizada apenas para build do executável. O código gerado pelo PyInstaller não é coberto pela GPL — apenas o próprio PyInstaller é.

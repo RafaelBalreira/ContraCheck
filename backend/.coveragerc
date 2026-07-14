@@ -1,0 +1,12 @@
+[run]
+source = backend
+omit =
+    backend/tests/*
+    backend/__main__.py
+
+[report]
+show_missing = true
+precision = 1
+
+[xml]
+output = coverage.xml

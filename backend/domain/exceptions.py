@@ -12,7 +12,3 @@ class PasswordProtectedError(PDFError):
 
 class EmptyFileError(PDFError):
     pass
-
-
-class UnreadablePageError(PDFError):
-    pass

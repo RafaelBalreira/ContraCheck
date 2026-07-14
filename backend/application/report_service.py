@@ -5,14 +5,25 @@ from fpdf import FPDF
 from backend.domain.models import PaySlip
 
 
+def _sort_key(name: str) -> str:
+    import unicodedata
+    return "".join(
+        c for c in unicodedata.normalize("NFD", name)
+        if unicodedata.category(c) != "Mn"
+    ).lower()
+
+
 def records_to_dataframe(records: list[PaySlip]) -> pd.DataFrame:
+    if not records:
+        return pd.DataFrame(columns=["Nome do Funcionário", "Total de Vencimentos", "Arquivo"])
+    sorted_records = sorted(records, key=lambda r: _sort_key(r.employee_name))
     data = [
         {
             "Nome do Funcionário": r.employee_name,
             "Total de Vencimentos": r.total_vencimentos,
             "Arquivo": r.source_file,
         }
-        for r in records
+        for r in sorted_records
     ]
     return pd.DataFrame(data)
 
@@ -99,9 +110,10 @@ class _PdfReport(FPDF):
 
 
 def generate_pdf(records: list[PaySlip], ignored_count: int = 0) -> bytes:
-    pdf = _PdfReport(total_records=len(records), total_ignored=ignored_count)
+    sorted_records = sorted(records, key=lambda r: _sort_key(r.employee_name))
+    pdf = _PdfReport(total_records=len(sorted_records), total_ignored=ignored_count)
     pdf.alias_nb_pages()
     pdf.add_page()
-    pdf.add_records(records)
+    pdf.add_records(sorted_records)
     return bytes(pdf.output())
 
