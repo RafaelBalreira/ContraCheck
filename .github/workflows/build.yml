@@ -15,7 +15,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
 
       - name: Build Angular frontend
         run: |
@@ -35,11 +35,10 @@ jobs:
 
       - name: Build executable with PyInstaller
         run: |
-          cd backend
           pyinstaller \
             --name contracheck \
             --onefile \
-            --add-data "../frontend/dist/frontend/browser:frontend/dist/frontend/browser" \
+            --add-data "frontend/dist/frontend/browser:frontend/dist/frontend/browser" \
             --hidden-import backend \
             --hidden-import backend.main \
             --hidden-import backend.application \
@@ -54,11 +53,11 @@ jobs:
             --collect-submodules backend \
             --noconfirm \
             -c \
-            main.py
+            backend/main.py
 
       - name: Upload executable
         uses: actions/upload-artifact@v4
         with:
-          name: contracheque-linux
-          path: backend/dist/contracheque
+          name: contracheck-linux
+          path: dist/contracheck
           if-no-files-found: error
