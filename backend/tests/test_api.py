@@ -300,3 +300,11 @@ class TestSpaServing:
                 tc = StarletteClient(spa_app)
                 resp = tc.get("/nonexistent")
                 assert resp.status_code == 404
+
+    def test_spa_returns_404_when_static_dir_is_none(self):
+        with patch("backend.main._static_dir", None):
+            from backend.main import app as spa_app
+            from starlette.testclient import TestClient as StarletteClient
+            tc = StarletteClient(spa_app)
+            resp = tc.get("/any/route")
+            assert resp.status_code == 404

@@ -7,7 +7,7 @@ from fpdf import FPDF
 from backend.domain.models import PaySlip
 
 
-def _find_font(*names: str) -> str:
+def _find_font(*names: str) -> str:  # pragma: no cover
     system = platform.system()
     if system == "Windows":
         candidates = [f"C:/Windows/Fonts/{n}.ttf" for n in names]
