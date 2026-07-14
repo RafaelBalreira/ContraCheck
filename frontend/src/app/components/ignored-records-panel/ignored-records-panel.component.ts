@@ -1,5 +1,5 @@
 import { Component, input, output, signal, computed } from '@angular/core'
-import { CommonModule } from '@angular/common'
+
 import { MatTableModule } from '@angular/material/table'
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator'
 import { MatButtonModule } from '@angular/material/button'
@@ -8,7 +8,7 @@ import { IgnoredRecord } from '../../models/report.models'
 
 @Component({
   selector: 'app-ignored-records-panel',
-  imports: [CommonModule, MatTableModule, MatPaginatorModule, MatButtonModule, MatIconModule],
+  imports: [MatTableModule, MatPaginatorModule, MatButtonModule, MatIconModule],
   templateUrl: './ignored-records-panel.component.html',
   styleUrls: ['./ignored-records-panel.component.scss'],
 })

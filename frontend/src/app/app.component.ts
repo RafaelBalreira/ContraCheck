@@ -1,5 +1,5 @@
 import { Component, signal } from '@angular/core'
-import { CommonModule } from '@angular/common'
+
 import { UploadAreaComponent } from './components/upload-area/upload-area.component'
 import { ProgressIndicatorComponent } from './components/progress-indicator/progress-indicator.component'
 import { ReportTableComponent } from './components/report-table/report-table.component'
@@ -14,13 +14,12 @@ type AppState = 'idle' | 'uploading' | 'processing' | 'complete' | 'error'
 @Component({
   selector: 'app-root',
   imports: [
-    CommonModule,
     UploadAreaComponent,
     ProgressIndicatorComponent,
     ReportTableComponent,
     ErrorDisplayComponent,
-    IgnoredRecordsPanelComponent,
-  ],
+    IgnoredRecordsPanelComponent
+],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })

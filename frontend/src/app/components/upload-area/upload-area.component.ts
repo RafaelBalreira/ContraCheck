@@ -1,12 +1,12 @@
 import { Component, output, signal } from '@angular/core'
-import { CommonModule } from '@angular/common'
+
 import { MatIconModule } from '@angular/material/icon'
 import { MatButtonModule } from '@angular/material/button'
 import { MatChipsModule } from '@angular/material/chips'
 
 @Component({
   selector: 'app-upload-area',
-  imports: [CommonModule, MatIconModule, MatButtonModule, MatChipsModule],
+  imports: [MatIconModule, MatButtonModule, MatChipsModule],
   templateUrl: './upload-area.component.html',
   styleUrls: ['./upload-area.component.scss'],
 })
