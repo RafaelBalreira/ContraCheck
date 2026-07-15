@@ -12,6 +12,8 @@ jobs:
   snyk-backend:
     runs-on: ubuntu-latest
     environment: development
+    permissions:
+      security-events: write
 
     steps:
       - name: Checkout repository
@@ -33,17 +35,19 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          args: --file=backend/requirements.txt --severity-threshold=high
+          args: --file=backend/requirements.txt --severity-threshold=high --sarif-file-output=snyk-backend.sarif
 
       - name: Upload Snyk results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
-          sarif_file: snyk.sarif
+          sarif_file: snyk-backend.sarif
 
   snyk-frontend:
     runs-on: ubuntu-latest
     environment: development
+    permissions:
+      security-events: write
 
     steps:
       - name: Checkout repository
@@ -65,13 +69,13 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          args: --file=frontend/package.json --severity-threshold=high
+          args: --file=frontend/package.json --severity-threshold=high --sarif-file-output=snyk-frontend.sarif
 
       - name: Upload Snyk results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
-          sarif_file: snyk.sarif
+          sarif_file: snyk-frontend.sarif
 
   snyk-monitor:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
