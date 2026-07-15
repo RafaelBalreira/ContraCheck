@@ -42,6 +42,7 @@ jobs:
         if: always()
         with:
           sarif_file: snyk-backend.sarif
+          category: snyk-backend
 
   snyk-frontend:
     runs-on: ubuntu-latest
@@ -76,6 +77,7 @@ jobs:
         if: always()
         with:
           sarif_file: snyk-frontend.sarif
+          category: snyk-frontend
 
   snyk-monitor:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
