@@ -88,8 +88,7 @@ class TestExtractEmployeeName:
         return {"x0": x0, "y0": y0, "x1": x1, "y1": y1, "text": text}
 
     def _make_page_with_label(self, *, name_label_x0=71, name_label_y0=73, name_label_y1=89,
-                              name_x0=71, name_y0=80, name_y1=89, name="JOÃO SILVA",
-                              extra_blocks=None):
+                              name_x0=71, name_y0=80, name_y1=89, name="JOÃO SILVA"):
         blocks = [
             self._make_block(29, 39, 210, 49, "EMPRESA EXEMPLO"),
             self._make_block(name_label_x0, name_label_y0, 398, name_label_y1,
@@ -98,13 +97,10 @@ class TestExtractEmployeeName:
             self._make_block(373, 299, 412, 304, "Total de Vencimentos"),
             self._make_block(379, 312, 425, 321, "0.000,00"),
         ]
-        if extra_blocks:
-            blocks.extend(extra_blocks)
         return blocks
 
     def _make_page_without_label(self, *, name="FULANO DE TAL",
-                                 name_x0=71, name_y0=59, name_y1=67,
-                                 extra_blocks=None):
+                                 name_x0=71, name_y0=59, name_y1=67):
         blocks = [
             self._make_block(11, 19, 141, 27, "EMPRESA FULANO DE TAL LTDA"),
             self._make_block(11, 32, 108, 40, "CNPJ 00.000.000/0001-00"),
@@ -115,8 +111,6 @@ class TestExtractEmployeeName:
             self._make_block(46, 110, 116, 118, "HORAS NORMAIS"),
             self._make_block(372, 110, 404, 118, "3.500,00"),
         ]
-        if extra_blocks:
-            blocks.extend(extra_blocks)
         return blocks
 
     def test_extracts_name_with_label(self, strategy):

@@ -7,6 +7,9 @@ omit =
 [report]
 show_missing = true
 precision = 1
+omit =
+    */tests/*
+    */__main__.py
 
 [xml]
 output = coverage.xml

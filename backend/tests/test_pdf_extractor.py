@@ -17,11 +17,6 @@ def _make_empty_pdf(path):
         f.write(b"")
 
 
-def _make_invalid_pdf(path):
-    with open(path, "wb") as f:
-        f.write(b"not a pdf content")
-
-
 class TestPdfExtractorFileValidation:
     def test_get_page_count_with_test_pdf(self, extractor, first_test_pdf):
         count = extractor.get_page_count(first_test_pdf)

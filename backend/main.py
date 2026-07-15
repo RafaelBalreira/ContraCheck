@@ -229,4 +229,15 @@ async def serve_spa(full_path: str):
 
 if __name__ == "__main__":  # pragma: no cover
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    import threading
+    import webbrowser
+
+    PORT = 8000
+    URL = f"http://localhost:{PORT}"
+
+    def _open_browser():
+        time.sleep(1.5)
+        webbrowser.open(URL)
+
+    threading.Thread(target=_open_browser, daemon=True).start()
+    uvicorn.run(app, host="0.0.0.0", port=PORT)
