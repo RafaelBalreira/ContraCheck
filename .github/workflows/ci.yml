@@ -7,33 +7,34 @@ on:
     branches: [main]
 
 jobs:
-  backend:
+  test-backend:
     runs-on: ubuntu-latest
     permissions:
       contents: write
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Setup Python
+      - name: Setup Python 3.13
         uses: actions/setup-python@v5
         with:
           python-version: "3.13"
 
-      - name: Install dependencies
+      - name: Install backend Python dependencies
         run: |
           cd backend
           pip install -r requirements.txt
 
-      - name: Install fonts for PDF generation
+      - name: Install system fonts for PDF generation
         run: sudo apt-get update && sudo apt-get install -y fonts-dejavu-core
 
-      - name: Run tests with coverage
+      - name: Run backend tests with pytest and coverage
         run: |
           cd backend
           python -m pytest tests/ -v --cov --cov-report=xml
 
-      - name: Generate coverage badge
+      - name: Generate backend coverage badge
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
           rm -rf .github/badges/*
