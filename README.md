@@ -1,6 +1,7 @@
 # ContraCheck
 
 ![Cobertura](.github/badges/backend-coverage.svg)
+![Cobertura Frontend](.github/badges/frontend-coverage.svg)
 [![Snyk Python](https://snyk.io/test/github/RafaelBalreira/ContraCheck/badge.svg?targetFile=backend/requirements.txt)](https://snyk.io/test/github/RafaelBalreira/ContraCheck?targetFile=backend/requirements.txt)
 [![Snyk Node](https://snyk.io/test/github/RafaelBalreira/ContraCheck/badge.svg?targetFile=frontend/package.json)](https://snyk.io/test/github/RafaelBalreira/ContraCheck?targetFile=frontend/package.json)
 
@@ -225,9 +226,15 @@ python -m pytest tests/ -v
 # Backend (apenas testes independentes do PDF de amostra)
 python -m pytest tests/test_extraction.py -v
 
-# Frontend
+# Backend com cobertura
+python -m pytest tests/ -v --cov=. --cov-report=term-missing
+
+# Frontend (watch mode)
 cd frontend
 ng test
+
+# Frontend com cobertura (CI)
+ng test --no-watch --browsers=ChromeHeadlessNoSandbox --code-coverage
 ```
 
 > **Nota:** Alguns testes de integração requerem um PDF de amostra que não está incluído no repositório por questões de privacidade.
