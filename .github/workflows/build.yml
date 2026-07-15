@@ -10,7 +10,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Get version from tag
         id: version
@@ -23,7 +23,7 @@ jobs:
           echo "APP_VERSION=$tag" >> $env:GITHUB_OUTPUT
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: "24"
 
@@ -37,7 +37,7 @@ jobs:
           npx ng build --configuration production
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.13"
 
@@ -72,7 +72,7 @@ jobs:
             backend/main.py
 
       - name: Upload executable
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ContraCheck-${{ steps.version.outputs.APP_VERSION }}-windows
           path: dist/ContraCheck.exe

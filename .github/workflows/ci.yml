@@ -5,6 +5,8 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  schedule:
+    - cron: "0 8 * * 1"
 
 jobs:
   test-backend:
@@ -14,10 +16,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Python 3.13
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.13"
 
@@ -91,3 +93,121 @@ jobs:
           git add .github/badges/backend-coverage.svg
           git diff --staged --quiet || git commit -m "ci: update coverage badge [skip ci]"
           git push
+
+  snyk-backend:
+    needs: test-backend
+    runs-on: ubuntu-latest
+    environment: development
+    permissions:
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Python 3.13
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install backend Python dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+
+      - name: Install Snyk CLI
+        run: npm install -g snyk
+
+      - name: Scan backend dependencies for vulnerabilities with Snyk
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: snyk test --file=backend/requirements.txt --severity-threshold=high --sarif-file-output=snyk-backend.sarif
+
+      - name: Upload Snyk backend results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v4
+        if: always()
+        with:
+          sarif_file: snyk-backend.sarif
+          category: snyk-backend
+
+  snyk-frontend:
+    runs-on: ubuntu-latest
+    environment: development
+    permissions:
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v5
+        with:
+          node-version: "24"
+
+      - name: Install frontend npm dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Install Snyk CLI
+        run: npm install -g snyk
+
+      - name: Scan frontend dependencies for vulnerabilities with Snyk
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: snyk test --file=frontend/package.json --severity-threshold=high --sarif-file-output=snyk-frontend.sarif
+
+      - name: Upload Snyk frontend results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v4
+        if: always()
+        with:
+          sarif_file: snyk-frontend.sarif
+          category: snyk-frontend
+
+  snyk-monitor:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [snyk-backend, snyk-frontend]
+    runs-on: ubuntu-latest
+    environment: development
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Python 3.13
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install backend Python dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v5
+        with:
+          node-version: "24"
+
+      - name: Install frontend npm dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Install Snyk CLI
+        run: npm install -g snyk
+
+      - name: Register backend dependencies in Snyk monitor
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: snyk monitor --file=backend/requirements.txt --project-name=ContraCheck/backend
+
+      - name: Register frontend dependencies in Snyk monitor
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: snyk monitor --file=frontend/package.json --project-name=ContraCheck/frontend
