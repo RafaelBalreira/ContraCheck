@@ -1,6 +1,8 @@
 # ContraCheck
 
 ![Cobertura](.github/badges/backend-coverage.svg)
+[![Snyk Python](https://snyk.io/test/github/RafaelBalreira/ContraCheck/badge.svg?targetFile=backend/requirements.txt)](https://snyk.io/test/github/RafaelBalreira/ContraCheck?targetFile=backend/requirements.txt)
+[![Snyk Node](https://snyk.io/test/github/RafaelBalreira/ContraCheck/badge.svg?targetFile=frontend/package.json)](https://snyk.io/test/github/RafaelBalreira/ContraCheck?targetFile=frontend/package.json)
 
 Sistema web para leitura automatizada de contracheques em PDF, extração de dados de cada folha e geração de relatórios consolidados (CSV, Excel e PDF).
 
