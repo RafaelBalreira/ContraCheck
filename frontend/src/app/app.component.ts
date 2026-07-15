@@ -1,4 +1,5 @@
 import { Component, signal, ChangeDetectionStrategy } from '@angular/core'
+import { APP_VERSION } from '../environments/version'
 
 import { UploadAreaComponent } from './components/upload-area/upload-area.component'
 import { ProgressIndicatorComponent } from './components/progress-indicator/progress-indicator.component'
@@ -25,6 +26,7 @@ type AppState = 'idle' | 'uploading' | 'processing' | 'complete' | 'error'
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
+  version = APP_VERSION
   state = signal<AppState>('idle')
   records = signal<PaySlip[]>([])
   ignoredRecords = signal<IgnoredRecord[]>([])

@@ -27,7 +27,13 @@ def _resolve_static_dir() -> Path | None:
     return None
 
 
-app = FastAPI(title="PDF Contracheque Report")
+APP_VERSION = os.getenv("APP_VERSION", "dev")
+
+app = FastAPI(
+    title="ContraCheck",
+    version=APP_VERSION,
+    description="ContraCheck - Relatório de Contracheques",
+)
 
 app.add_middleware(
     CORSMiddleware,
