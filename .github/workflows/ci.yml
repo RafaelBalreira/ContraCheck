@@ -159,8 +159,8 @@ jobs:
             </g>
           </svg>'''
 
-          os.makedirs("../../.github/badges", exist_ok=True)
-          with open("../../.github/badges/frontend-coverage.svg", "w") as f:
+          os.makedirs("../.github/badges", exist_ok=True)
+          with open("../.github/badges/frontend-coverage.svg", "w") as f:
               f.write(svg)
           print(f"Badge generated: {pct}%")
           PYEOF
