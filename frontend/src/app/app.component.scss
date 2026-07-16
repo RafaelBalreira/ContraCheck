@@ -26,3 +26,72 @@
 .app-main {
   min-height: 200px;
 }
+
+.app-footer {
+  margin-top: 48px;
+  padding: 24px 0 16px;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #555;
+
+  h3 {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #999;
+    margin: 0 0 8px;
+  }
+
+  p {
+    margin: 0 0 4px;
+  }
+
+  a {
+    color: #1976d2;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    svg {
+      flex-shrink: 0;
+    }
+  }
+}
+
+.footer-section {
+  min-width: 0;
+}
+
+.footer-left {
+  text-align: left;
+}
+
+.footer-center {
+  text-align: center;
+
+  a {
+    color: #999;
+
+    &:hover {
+      color: #1976d2;
+    }
+  }
+}
+
+.footer-right {
+  text-align: right;
+}
+
+.footer-links {
+  display: flex;
+  gap: 16px;
+  margin-top: 4px;
+}
