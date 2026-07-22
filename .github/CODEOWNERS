@@ -1,0 +1,11 @@
+# Default owner for everything in the repo
+* @RafaelBalreira
+
+# Backend code
+/backend/ @RafaelBalreira
+
+# Frontend code
+/frontend/ @RafaelBalreira
+
+# CI/CD workflows
+/.github/ @RafaelBalreira
