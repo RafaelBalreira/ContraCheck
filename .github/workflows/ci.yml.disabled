@@ -1,3 +1,8 @@
+# DESATIVADO - este workflow nao sera executado pelo GitHub Actions.
+# Motivo: execucao automatica desativada por decisao do mantenedor (#5).
+# O GitHub Actions so executa arquivos com extensao .yml/.yaml em .github/workflows/,
+# por isso a extensao .disabled mantem o workflow inerte sem remover o codigo.
+# Para reativar: renomeie este arquivo de volta para `ci.yml` e remova este cabecalho.
 name: CI
 
 on:
